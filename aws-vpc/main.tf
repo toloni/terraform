@@ -25,3 +25,35 @@ resource "aws_subnet" "toloni_private_subnet" {
   }
 }
 
+# Gateway
+
+resource "aws_internet_gateway" "toloni_intenet_gateway" {
+  vpc_id = aws_vpc.VPC_TOLONI.id
+
+  tags = {
+    Name = "toloni_igw"
+  }
+}
+
+resource "aws_route_table" "toloni_private_rt" {
+  vpc_id = aws_vpc.VPC_TOLONI.id
+
+  tags = {
+    Name = "toloni_private"
+  }
+}
+
+resource "aws_route" "default_route" {
+  route_table_id         = aws_route_table.toloni_private_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.toloni_intenet_gateway.id
+}
+
+resource "aws_default_route_table" "toloni_private_rt" {
+  default_route_table_id = aws_vpc.VPC_TOLONI.default_route_table_id
+
+  tags = {
+    Name = "toloni_private"
+  }
+}
+
